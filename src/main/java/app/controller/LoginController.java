@@ -37,8 +37,6 @@ public class LoginController implements FxmlController{
     @FXML
     private void handleButtonAction(ActionEvent event) throws IOException {
 
-        GetAccountsResponse accountsRequest = bankClient.getAccountsRequest("123");
-        System.out.println(accountsRequest.getAccounts().size());
 
         if(userNameField.getText().equals("admin") && passwordField.getText().equals("admin")){
             System.out.println("Pomyślne logowanie");
