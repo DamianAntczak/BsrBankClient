@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.112" fx:controller="app.controller.LoginController">
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <VBox prefHeight="200.0" prefWidth="100.0">
+         <children>
+            <Region prefHeight="200.0" prefWidth="100.0" />
+            <TextField fx:id="userNameField" />
+            <Region prefHeight="200.0" prefWidth="200.0" />
+            <PasswordField fx:id="passwordField" />
+            <Region prefHeight="200.0" prefWidth="200.0" />
+            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="104.0" text="Logowanie" onAction="#handleButtonAction" />
+            <Region prefHeight="200.0" prefWidth="200.0" />
+         </children>
+      </VBox>
+   </children>
+</GridPane>
