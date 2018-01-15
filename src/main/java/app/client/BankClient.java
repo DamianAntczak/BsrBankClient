@@ -1,8 +1,7 @@
 package app.client;
 
-import bank.wsdl.Account;
-import bank.wsdl.GetAccountsRequest;
-import bank.wsdl.GetAccountsResponse;
+
+import bank.wsdl.*;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 
@@ -17,5 +16,13 @@ public class BankClient extends WebServiceGatewaySupport {
         GetAccountsResponse response = (GetAccountsResponse) getWebServiceTemplate().marshalSendAndReceive(
                 request, new SoapActionCallback("http://localhost:8080/ws"));
         return response.getAccounts();
+    }
+
+    public List<History> getHistory(String nrb){
+        GetTransactionsRequest request = new GetTransactionsRequest();
+        request.setNrb(nrb);
+        GetTransactionsResponse response = (GetTransactionsResponse) getWebServiceTemplate().marshalSendAndReceive(
+                request, new SoapActionCallback("http://localhost:8080/ws"));
+        return response.getTransactions();
     }
 }

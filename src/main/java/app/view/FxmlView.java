@@ -9,7 +9,8 @@ import lombok.Getter;
 public enum FxmlView {
 
     ACCOUNT("Widok konta", "../../account.fxml"),
-    LOGIN("Logowanie do banku", "../../sample.fxml");
+    LOGIN("Logowanie do banku", "../../sample.fxml"),
+    PAYMENT("Wplata", "../../payment.fxml");
 
     String title;
     String fxmlFile;
