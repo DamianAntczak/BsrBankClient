@@ -1,6 +1,7 @@
 package app.controller;
 
 import app.client.BankClient;
+import app.service.ContextService;
 import app.view.FxmlView;
 import app.view.StageManager;
 import bank.wsdl.GetAccountsResponse;
@@ -22,6 +23,8 @@ public class LoginController implements FxmlController{
 
     @Autowired
     private BankClient bankClient;
+    @Autowired
+    private ContextService contextService;
 
     @FXML
     private TextField userNameField;
@@ -41,6 +44,8 @@ public class LoginController implements FxmlController{
         if(userNameField.getText().equals("admin") && passwordField.getText().equals("admin")){
             System.out.println("Pomyślne logowanie");
 
+            contextService.setClientId("1234");
+            contextService.setToken("ScdX34d");
             stageManager.switchScene(FxmlView.ACCOUNT);
 
         }

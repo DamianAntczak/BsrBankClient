@@ -1,6 +1,7 @@
 package app.controller;
 
 import app.client.BankClient;
+import app.service.ContextService;
 import app.utils.NrbUtil;
 import app.view.FxmlView;
 import app.view.StageManager;
@@ -27,8 +28,8 @@ public class AccountController implements FxmlController {
 
 
     private final StageManager stageManager;
-
     private BankClient bankClient;
+    private ContextService contextService;
 
     @FXML
     private ComboBox<Account> accountComboBox;
@@ -54,18 +55,20 @@ public class AccountController implements FxmlController {
 
     @Autowired
     @Lazy
-    public AccountController(BankClient bankClient, StageManager stageManager) {
+    public AccountController(BankClient bankClient, StageManager stageManager, ContextService contextService) {
         this.bankClient = bankClient;
         this.stageManager = stageManager;
+        this.contextService = contextService;
     }
 
     @FXML
     private void handleButtonAction(ActionEvent event) throws IOException {
-        //TODO
+
     }
 
     @Override
     public void initialize() {
+        saldoLabel.setText(contextService.getClientId());
         accountComboBox.setCellFactory(new Callback<ListView<Account>, ListCell<Account>>() {
             @Override
             public ListCell<Account> call(ListView<Account> param) {
@@ -119,6 +122,9 @@ public class AccountController implements FxmlController {
         List<Account> accounts = bankClient.getAccountsRequest(id);
         accountComboBox.setItems(FXCollections.observableArrayList(accounts));
         accountComboBox.getSelectionModel().selectFirst();
+        selectedAccount = accountComboBox.getValue();
+        contextService.setNbr(selectedAccount.getNrb());
+        contextService.setClientName("Damian Antczak");
     }
 
     @FXML
@@ -133,7 +139,8 @@ public class AccountController implements FxmlController {
     @FXML
     private void handlePaymentButtonAction(ActionEvent event) {
         if (selectedAccount != null) {
-            stageManager.switchScene(FxmlView.PAYMENT);
+            stageManager.switchScene(FxmlView.OPERATIONS);
         }
     }
+
 }

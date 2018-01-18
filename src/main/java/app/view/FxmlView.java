@@ -10,7 +10,7 @@ public enum FxmlView {
 
     ACCOUNT("Widok konta", "../../account.fxml"),
     LOGIN("Logowanie do banku", "../../sample.fxml"),
-    PAYMENT("Wplata", "../../payment.fxml");
+    OPERATIONS("Wplata", "../../operations.fxml");
 
     String title;
     String fxmlFile;
