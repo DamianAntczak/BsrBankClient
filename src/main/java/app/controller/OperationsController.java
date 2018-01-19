@@ -2,6 +2,7 @@ package app.controller;
 
 
 import app.client.BankClient;
+import app.service.ContextService;
 import app.utils.NrbUtil;
 import app.view.FxmlView;
 import app.view.StageManager;
@@ -24,6 +25,8 @@ public class OperationsController implements FxmlController {
 
     @Autowired
     private BankClient bankClient;
+    @Autowired
+    private ContextService contextService;
     private StageManager stageManager;
 
     @FXML
@@ -53,8 +56,9 @@ public class OperationsController implements FxmlController {
     @FXML
     private Label withdrawalMessageLabel;
 
-    @Autowired @Lazy
-    public OperationsController(StageManager stageManager){
+    @Autowired
+    @Lazy
+    public OperationsController(StageManager stageManager) {
         this.stageManager = stageManager;
     }
 
@@ -68,6 +72,11 @@ public class OperationsController implements FxmlController {
         boolean isValid = true;
         String errorText = "";
         BigDecimal amount = null;
+
+        if (transferAccountNumber.getText().replace(" ", "").equals(contextService.getNbr())) {
+            errorText += "Nie można dokonać przelewu na to samo konto";
+            isValid = false;
+        }
 
         if (!NrbUtil.validateNrb(transferAccountNumber.getText())) {
             errorText += "Niepoprawny numer konta odbiorcy";
@@ -85,12 +94,11 @@ public class OperationsController implements FxmlController {
         if (transferAmountFild.getText().isEmpty()) {
             errorText += System.lineSeparator() + "Kwota przelewu musi zostać podana";
             isValid = false;
-        }
-        else {
-            amount = new BigDecimal(transferAmountFild.getText().replace(",","."));
+        } else {
+            amount = new BigDecimal(transferAmountFild.getText().replace(",", "."));
             amount = amount.multiply(BigDecimal.valueOf(100));
 
-            if(amount.compareTo(BigDecimal.ZERO) < 0){
+            if (amount.compareTo(BigDecimal.ZERO) < 0) {
                 errorText += System.lineSeparator() + "Kwota przelewu nie może być ujemna";
                 isValid = false;
             }
@@ -117,31 +125,39 @@ public class OperationsController implements FxmlController {
     }
 
     @FXML
-    public void handlePaymentAcceptButton(){
+    public void handlePaymentAcceptButton() {
         String message = "";
         boolean isValid = true;
 
-        if(paymentTitle.getText().isEmpty()){
+        if (paymentTitle.getText().isEmpty()) {
             message += "Tytuł operacji nie może być pusty";
             isValid = false;
         }
 
-        Double amount = Double.parseDouble(paymentAmountFild.getText().replace(",","."));
+        if (!paymentAmountFild.getText().replace(",", ".").matches("\\d+(\\.\\d{1,2})?")) {
+            message += System.lineSeparator() + "Nie poprawny fromat kwoty";
+            isValid = false;
+        }
+
+        Double amount = Double.parseDouble(paymentAmountFild.getText().replace(",", "."));
+        if (amount < 0) {
+            message += System.lineSeparator() + "Kwota wpłaty nie może być ujemna";
+            isValid = false;
+        }
+
         try {
-            if(isValid) {
+            if (isValid) {
                 bankClient.addPayment(amount, paymentTitle.getText());
                 paymentMessageLabel.setTextFill(Color.GREEN);
                 paymentMessageLabel.setText("Pomyślnie dokonano wpłaty");
                 paymentAmountFild.setText("");
                 paymentTitle.setText("");
-            }
-            else {
+            } else {
                 paymentMessageLabel.setTextFill(Color.RED);
                 paymentMessageLabel.setText(message);
             }
-        }
-        catch (NumberFormatException e){
-            message += System.lineSeparator() +  "Nie poprawna wartość kwoty";
+        } catch (NumberFormatException e) {
+            message += System.lineSeparator() + "Nie poprawna wartość kwoty";
             paymentMessageLabel.setTextFill(Color.RED);
             paymentMessageLabel.setText(message);
         }
@@ -149,40 +165,46 @@ public class OperationsController implements FxmlController {
     }
 
     @FXML
-    public void handleWithdrawalAcceptButton(){
+    public void handleWithdrawalAcceptButton() {
         String message = "";
         boolean isValid = true;
 
         try {
 
-            if(withdrawalTitle.getText().isEmpty()){
+            if (withdrawalTitle.getText().isEmpty()) {
                 message += "Tytuł operacji nie może być pusty";
                 isValid = false;
             }
+            if (!paymentAmountFild.getText().replace(",", ".").matches("\\d+(\\.\\d{1,2})?")) {
+                message += System.lineSeparator() + "Nie poprawny fromat kwoty";
+                isValid = false;
+            }
 
-            Double amount = Double.parseDouble(paymentAmountFild.getText().replace(",","."));
+            Double amount = Double.parseDouble(paymentAmountFild.getText().replace(",", "."));
+            if (amount < 0) {
+                message += System.lineSeparator() + "Kwota wypłaty nie może być ujemna";
+                isValid = false;
+            }
 
-            if(isValid) {
+            if (isValid) {
                 bankClient.addWithdrawal(amount, withdrawalTitle.getText());
                 withdrawalMessageLabel.setTextFill(Color.GREEN);
                 withdrawalMessageLabel.setText("Pomyślnie dokonano wypłaty");
                 withdrawalAmountFild.setText("");
                 withdrawalTitle.setText("");
-            }
-            else {
+            } else {
                 withdrawalMessageLabel.setTextFill(Color.RED);
                 withdrawalMessageLabel.setText(message);
             }
-        }
-        catch (NumberFormatException e){
-            message += System.lineSeparator() +  "Nie poprawna wartość kwoty";
+        } catch (NumberFormatException e) {
+            message += System.lineSeparator() + "Nie poprawna wartość kwoty";
             withdrawalMessageLabel.setTextFill(Color.RED);
             withdrawalMessageLabel.setText(message);
         }
     }
 
     @FXML
-    private void handleBackButton(){
+    private void handleBackButton() {
         stageManager.switchScene(FxmlView.ACCOUNT);
     }
 }

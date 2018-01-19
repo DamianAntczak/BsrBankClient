@@ -7,6 +7,9 @@ import app.view.FxmlView;
 import app.view.StageManager;
 import bank.wsdl.Account;
 import bank.wsdl.History;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,6 +23,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Component
@@ -78,11 +82,35 @@ public class AccountController implements FxmlController {
         TableColumn dateCol = new TableColumn("Data transakcji");
         dateCol.setCellValueFactory(new PropertyValueFactory("timestamp"));
         TableColumn lastNameCol = new TableColumn("Odbiorca / Nadawca");
+        lastNameCol.setCellValueFactory(new PropertyValueFactory("sourceName"));
+//        lastNameCol.setCellValueFactory((Callback<TableColumn.CellDataFeatures<History, String>, ObservableValue<String>>) p -> {
+//            if (p.getValue() != null) {
+//                if(p.getValue().getDestinationName().equals("PAYMENT"))
+//                    return new SimpleStringProperty("Wpłata własna");
+//                if(p.getValue().getDestinationName().equals("WITHDRAWAL"))
+//                    return new SimpleStringProperty("Wypłata własna");
+//                else
+//                    return new SimpleStringProperty("");
+//            } else {
+//                return new SimpleStringProperty("");
+//            }
+//        });
         TableColumn<History, String> titleCol = new TableColumn("Tytuł");
         titleCol.setCellValueFactory(new PropertyValueFactory("title"));
         TableColumn amountCol = new TableColumn("Kwota");
-        amountCol.setCellValueFactory(new PropertyValueFactory("amount"));
-        historyListView.getColumns().addAll(dateCol, lastNameCol, titleCol, amountCol);
+        amountCol.setCellValueFactory((Callback<TableColumn.CellDataFeatures<History, String>, ObservableValue<String>>) p -> {
+            if (p.getValue() != null) {
+                BigDecimal amount = p.getValue().getBalanceAfter().subtract(p.getValue().getBalanceBefore());
+                return new SimpleStringProperty(amount.toString());
+            } else {
+                return new SimpleStringProperty("<no name>");
+            }
+        });
+        TableColumn balanceBefore = new TableColumn("Saldo przed");
+        balanceBefore.setCellValueFactory(new PropertyValueFactory("balanceBefore"));
+        TableColumn balanceAfter = new TableColumn("Saldo po");
+        balanceAfter.setCellValueFactory(new PropertyValueFactory("balanceAfter"));
+        historyListView.getColumns().addAll(dateCol, lastNameCol, titleCol, amountCol, balanceBefore, balanceAfter);
     }
 
     private void setHistoryTable(List<History> history) {
@@ -128,7 +156,7 @@ public class AccountController implements FxmlController {
     @FXML
     private void handleComboBoxAction() {
         selectedAccount = accountComboBox.getSelectionModel().getSelectedItem();
-        saldoLabel.setText(String.format("%.2f",selectedAccount.getBalance().floatValue()));
+        saldoLabel.setText(String.format("%.2f", selectedAccount.getBalance().floatValue()));
         contextService.setNbr(selectedAccount.getNrb());
         List<History> history = bankClient.getHistory(contextService.getNbr());
         setHistoryTable(history);
