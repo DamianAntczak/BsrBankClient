@@ -7,7 +7,6 @@ import app.view.FxmlView;
 import app.view.StageManager;
 import bank.wsdl.Account;
 import bank.wsdl.History;
-import bank.wsdl.Transaction;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -68,7 +67,30 @@ public class AccountController implements FxmlController {
 
     @Override
     public void initialize() {
-        saldoLabel.setText(contextService.getClientId());
+        setAccountComboBox();
+        getAccounts(contextService.getClientId());
+        nbrLabel.setText(contextService.getClientName());
+
+        initializeHistoryTable();
+    }
+
+    private void initializeHistoryTable() {
+        TableColumn dateCol = new TableColumn("Data transakcji");
+        dateCol.setCellValueFactory(new PropertyValueFactory("timestamp"));
+        TableColumn lastNameCol = new TableColumn("Odbiorca / Nadawca");
+        TableColumn<History, String> titleCol = new TableColumn("Tytuł");
+        titleCol.setCellValueFactory(new PropertyValueFactory("title"));
+        TableColumn amountCol = new TableColumn("Kwota");
+        amountCol.setCellValueFactory(new PropertyValueFactory("amount"));
+        historyListView.getColumns().addAll(dateCol, lastNameCol, titleCol, amountCol);
+    }
+
+    private void setHistoryTable(List<History> history) {
+        ObservableList<History> items = FXCollections.observableArrayList(history);
+        historyListView.setItems(items);
+    }
+
+    private void setAccountComboBox() {
         accountComboBox.setCellFactory(new Callback<ListView<Account>, ListCell<Account>>() {
             @Override
             public ListCell<Account> call(ListView<Account> param) {
@@ -96,44 +118,20 @@ public class AccountController implements FxmlController {
                 return null;
             }
         });
-        getAccounts("123");
-
-
-        List<History> history = bankClient.getHistory("28001168690649124429753628");
-
-
-        ObservableList<History> items = FXCollections.observableArrayList(history);
-
-        TableColumn dateCol = new TableColumn("Data transakcji");
-        dateCol.setCellValueFactory(new PropertyValueFactory("timestamp"));
-        TableColumn lastNameCol = new TableColumn("Odbiorca / Nadawca");
-        TableColumn<History,String> titleCol = new TableColumn("Tytuł");
-        titleCol.setCellValueFactory(new PropertyValueFactory("title"));
-        TableColumn amountCol = new TableColumn("Kwota");
-        amountCol.setCellValueFactory(new PropertyValueFactory("amount"));
-
-        historyListView.getColumns().addAll(dateCol, lastNameCol, titleCol, amountCol);
-
-        historyListView.setItems(items);
-
     }
 
     private void getAccounts(String id) {
         List<Account> accounts = bankClient.getAccountsRequest(id);
         accountComboBox.setItems(FXCollections.observableArrayList(accounts));
-        accountComboBox.getSelectionModel().selectFirst();
-        selectedAccount = accountComboBox.getValue();
-        contextService.setNbr(selectedAccount.getNrb());
-        contextService.setClientName("Damian Antczak");
     }
 
     @FXML
     private void handleComboBoxAction() {
         selectedAccount = accountComboBox.getSelectionModel().getSelectedItem();
-
-        nbrLabel.setText(selectedAccount.getNrb());
-        saldoLabel.setText(String.valueOf(selectedAccount.getAmount()));
-
+        saldoLabel.setText(String.format("%.2f",selectedAccount.getBalance().floatValue()));
+        contextService.setNbr(selectedAccount.getNrb());
+        List<History> history = bankClient.getHistory(contextService.getNbr());
+        setHistoryTable(history);
     }
 
     @FXML

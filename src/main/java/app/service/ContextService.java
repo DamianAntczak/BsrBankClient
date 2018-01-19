@@ -1,6 +1,5 @@
 package app.service;
 
-import bank.wsdl.Account;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;

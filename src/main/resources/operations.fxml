@@ -13,6 +13,9 @@
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.OperationsController">
+    <top>
+        <Button text="Powrót" onAction="#handleBackButton" prefWidth="200" BorderPane.alignment="TOP_LEFT"></Button>
+    </top>
     <center>
         <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
             <tabs>
@@ -58,12 +61,27 @@
                                 <TextField fx:id="paymentAmountFild" />
                             </HBox>
                             <Button fx:id="paymentAcceptButton" onAction="#handlePaymentAcceptButton" text="Wykonaj wpłatę" />
+                            <Label fx:id="paymentMessageLabel" minHeight="75" />
                         </VBox>
                     </content>
                 </Tab>
                 <Tab text="Wypłata">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        <VBox spacing="20">
+                            <padding>
+                                <Insets bottom="5.0" left="10.0" right="10.0" top="30.0" />
+                            </padding>
+                            <HBox>
+                                <Label minWidth="100" text="Tytuł wypłaty:" />
+                                <TextArea fx:id="withdrawalTitle" prefWidth="450.0" />
+                            </HBox>
+                            <HBox>
+                                <Label minWidth="100" text="Kwota wypłaty:" />
+                                <TextField fx:id="withdrawalAmountFild" />
+                            </HBox>
+                            <Button fx:id="withdrawalAcceptButton" onAction="#handleWithdrawalAcceptButton" text="Wykonaj wypłate" />
+                            <Label fx:id="withdrawalMessageLabel" minHeight="75" />
+                        </VBox>
                     </content>
                 </Tab>
             </tabs>

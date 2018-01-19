@@ -4,11 +4,12 @@ import app.client.BankClient;
 import app.service.ContextService;
 import app.view.FxmlView;
 import app.view.StageManager;
-import bank.wsdl.GetAccountsResponse;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,9 @@ public class LoginController implements FxmlController{
     @FXML
     private PasswordField passwordField;
 
+    @FXML
+    private Label loginMessage;
+
     @Autowired @Lazy
     public LoginController(StageManager stageManager){
         this.stageManager = stageManager;
@@ -40,17 +44,13 @@ public class LoginController implements FxmlController{
     @FXML
     private void handleButtonAction(ActionEvent event) throws IOException {
 
-
-        if(userNameField.getText().equals("admin") && passwordField.getText().equals("admin")){
-            System.out.println("Pomyślne logowanie");
-
-            contextService.setClientId("1234");
-            contextService.setToken("ScdX34d");
+        if(bankClient.loginToSystem(userNameField.getText(), passwordField.getText())){
             stageManager.switchScene(FxmlView.ACCOUNT);
-
         }
         else{
-            System.out.println("Błąd logowania");
+            loginMessage.setTextFill(Color.RED);
+            loginMessage.setText("Błąd logowania");
+            passwordField.setText("");
         }
     }
 

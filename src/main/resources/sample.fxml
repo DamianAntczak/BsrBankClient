@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 
 
+<?import javafx.scene.control.Label?>
 <GridPane alignment="center" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.112"
           fx:controller="app.controller.LoginController"
           prefHeight="200.0" prefWidth="300.0">
@@ -28,7 +29,8 @@
             <PasswordField fx:id="passwordField" />
             <Region prefHeight="20.0" prefWidth="200.0" />
             <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="104.0" text="Logowanie" onAction="#handleButtonAction" />
-            <Region prefHeight="20.0" prefWidth="200.0" />
+            <Region prefHeight="5.0" prefWidth="200.0" />
+            <Label fx:id="loginMessage"/>
          </children>
       </VBox>
    </children>
